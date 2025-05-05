@@ -137,7 +137,7 @@ const LOIForm = () => {
       
       // Use XMLHttpRequest instead of fetch to bypass potential blocking
       const xhr = new XMLHttpRequest();
-      xhr.open('POST', 'http://localhost:5000/api/quote-request', true);
+      xhr.open('POST', 'https://roodan.ae/api/quote-request', true);
       xhr.setRequestHeader('Content-Type', 'application/json');
       xhr.setRequestHeader('Accept', 'application/json');
       xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');

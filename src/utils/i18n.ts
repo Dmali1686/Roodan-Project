@@ -289,7 +289,7 @@ const translations: Record<Language, Record<string, string>> = {
       'loi.product.totalAmountPlaceholder': 'e.g. 25,000',
       'loi.product.selectIncoterms': 'Select Incoterms',
       'loi.product.deliveryPortPlaceholder': 'e.g. Port of Dubai',
-      'loi.product.targetPricePlaceholder': 'e.g. 450',
+      'loi.product.targetPricePlaceholder': 'e.g. 000',
 
       // Incoterm options
       'loi.incoterms.cif': 'CIF (Cost, Insurance, Freight)',
