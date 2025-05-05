@@ -337,85 +337,85 @@ def quote_request():
         print(f"Error in quote request: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
-@app.route('/loi-submission', methods=['POST'])
-def loi_submission():
-    try:
-        data = request.get_json()
-        print("Received LOI submission payload:", data)  # Debugging: Log the payload
+# @app.route('/loi-submission', methods=['POST'])
+# def loi_submission():
+#     try:
+#         data = request.get_json()
+#         print("Received LOI submission payload:", data)  # Debugging: Log the payload
 
-        # Extract user details from the payload
-        company_name = data.get('companyName')
-        rep_name = data.get('representativeName')
-        email = data.get('email')
-        phone = data.get('phone')
-        product = data.get('productName')
-        quantity = data.get('quantity')
-        loi_data = data  # Store the entire payload as JSON for future reference
+#         # Extract user details from the payload
+#         company_name = data.get('companyName')
+#         rep_name = data.get('representativeName')
+#         email = data.get('email')
+#         phone = data.get('phone')
+#         product = data.get('productName')
+#         quantity = data.get('quantity')
+#         loi_data = data  # Store the entire payload as JSON for future reference
 
-        # Record the LOI submission in the database
-        success = record_loi_submission(company_name, rep_name, email, phone, product, quantity, loi_data)
-        if not success:
-            return jsonify({"error": "Failed to record LOI submission"}), 500
+#         # Record the LOI submission in the database
+#         success = record_loi_submission(company_name, rep_name, email, phone, product, quantity, loi_data)
+#         if not success:
+#             return jsonify({"error": "Failed to record LOI submission"}), 500
 
-        # Create email content in table format
-        subject = f"New LOI Submission from {company_name}"
-        html_content = f"""
-        <html>
-        <head>
-            <style>
-                body {{ font-family: Arial, sans-serif; }}
-                table {{ border-collapse: collapse; width: 100%; margin-bottom: 20px; }}
-                th, td {{ border: 1px solid #ddd; padding: 8px; text-align: left; }}
-                th {{ background-color: #f2f2f2; }}
-                h2 {{ color: #333; }}
-            </style>
-        </head>
-        <body>
-            <h1>New LOI Submission Received</h1>
+#         # Create email content in table format
+#         subject = f"New LOI Submission from {company_name}"
+#         html_content = f"""
+#         <html>
+#         <head>
+#             <style>
+#                 body {{ font-family: Arial, sans-serif; }}
+#                 table {{ border-collapse: collapse; width: 100%; margin-bottom: 20px; }}
+#                 th, td {{ border: 1px solid #ddd; padding: 8px; text-align: left; }}
+#                 th {{ background-color: #f2f2f2; }}
+#                 h2 {{ color: #333; }}
+#             </style>
+#         </head>
+#         <body>
+#             <h1>New LOI Submission Received</h1>
             
-            <h2>Company Information</h2>
-            <table>
-                <tr><th>Field</th><th>Value</th></tr>
-                <tr><td>Company Name</td><td>{company_name}</td></tr>
-                <tr><td>Representative Name</td><td>{rep_name}</td></tr>
-                <tr><td>Email</td><td>{email}</td></tr>
-                <tr><td>Phone</td><td>{phone}</td></tr>
-                <tr><td>Product</td><td>{product}</td></tr>
-                <tr><td>Quantity</td><td>{quantity}</td></tr>
-            </table>
+#             <h2>Company Information</h2>
+#             <table>
+#                 <tr><th>Field</th><th>Value</th></tr>
+#                 <tr><td>Company Name</td><td>{company_name}</td></tr>
+#                 <tr><td>Representative Name</td><td>{rep_name}</td></tr>
+#                 <tr><td>Email</td><td>{email}</td></tr>
+#                 <tr><td>Phone</td><td>{phone}</td></tr>
+#                 <tr><td>Product</td><td>{product}</td></tr>
+#                 <tr><td>Quantity</td><td>{quantity}</td></tr>
+#             </table>
             
-            <h2>Bank Information</h2>
-            <table>
-                <tr><th>Field</th><th>Value</th></tr>
-                <tr><td>Bank Name</td><td>{data.get('bankName', 'N/A')}</td></tr>
-                <tr><td>Bank SWIFT Code</td><td>{data.get('bankSwiftCode', 'N/A')}</td></tr>
-                <tr><td>Bank Address</td><td>{data.get('bankAddress', 'N/A')}</td></tr>
-                <tr><td>Account Name</td><td>{data.get('accountName', 'N/A')}</td></tr>
-                <tr><td>Account Number</td><td>{data.get('accountNumber', 'N/A')}</td></tr>
-                <tr><td>Bank Officer Name</td><td>{data.get('bankOfficerName', 'N/A')}</td></tr>
-                <tr><td>Bank Officer Title</td><td>{data.get('bankOfficerTitle', 'N/A')}</td></tr>
-                <tr><td>Bank Phone</td><td>{data.get('bankPhone', 'N/A')}</td></tr>
-            </table>
+#             <h2>Bank Information</h2>
+#             <table>
+#                 <tr><th>Field</th><th>Value</th></tr>
+#                 <tr><td>Bank Name</td><td>{data.get('bankName', 'N/A')}</td></tr>
+#                 <tr><td>Bank SWIFT Code</td><td>{data.get('bankSwiftCode', 'N/A')}</td></tr>
+#                 <tr><td>Bank Address</td><td>{data.get('bankAddress', 'N/A')}</td></tr>
+#                 <tr><td>Account Name</td><td>{data.get('accountName', 'N/A')}</td></tr>
+#                 <tr><td>Account Number</td><td>{data.get('accountNumber', 'N/A')}</td></tr>
+#                 <tr><td>Bank Officer Name</td><td>{data.get('bankOfficerName', 'N/A')}</td></tr>
+#                 <tr><td>Bank Officer Title</td><td>{data.get('bankOfficerTitle', 'N/A')}</td></tr>
+#                 <tr><td>Bank Phone</td><td>{data.get('bankPhone', 'N/A')}</td></tr>
+#             </table>
             
-            <h2>Additional Information</h2>
-            <table>
-                <tr><th>Field</th><th>Value</th></tr>
-                <tr><td>Observations</td><td>{data.get('observations', 'N/A')}</td></tr>
-                <tr><td>Specifications</td><td>{data.get('specifications', 'N/A')}</td></tr>
-            </table>
-        </body>
-        </html>
-        """
+#             <h2>Additional Information</h2>
+#             <table>
+#                 <tr><th>Field</th><th>Value</th></tr>
+#                 <tr><td>Observations</td><td>{data.get('observations', 'N/A')}</td></tr>
+#                 <tr><td>Specifications</td><td>{data.get('specifications', 'N/A')}</td></tr>
+#             </table>
+#         </body>
+#         </html>
+#         """
 
-        # Send the email
-        email_sent = send_email(email, subject, html_content)
-        if not email_sent:
-            return jsonify({"error": "Failed to send email"}), 500
+#         # Send the email
+#         email_sent = send_email(email, subject, html_content)
+#         if not email_sent:
+#             return jsonify({"error": "Failed to send email"}), 500
 
-        return jsonify({"message": "LOI submission recorded successfully"}), 200
-    except Exception as e:
-        print(f"Error in LOI submission: {str(e)}")
-        return jsonify({"error": str(e)}), 500
+#         return jsonify({"message": "LOI submission recorded successfully"}), 200
+#     except Exception as e:
+#         print(f"Error in LOI submission: {str(e)}")
+#         return jsonify({"error": str(e)}), 500
 
 # Admin redirect
 @app.route('/admin', methods=['GET'])
