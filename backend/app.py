@@ -1,4 +1,3 @@
-#print(">> PASSENGER_WSGI.PY LOADED <<")
 from flask import Flask, request, jsonify, render_template, session, redirect, url_for, send_from_directory
 from flask_cors import CORS
 import smtplib
@@ -11,12 +10,9 @@ from admin import record_loi_submission, record_enquiry, record_quotation, admin
 # Load environment variables
 load_dotenv()
 
-BASE_DIR = os.path.dirname(_file_)
+BASE_DIR = os.path.dirname(__file__)
 
-app = Flask(
-    _name_
-    
-)
+app = Flask(__name__)
 
 raw_origins = os.getenv(
     "FRONTEND_ORIGINS",
@@ -33,32 +29,8 @@ if os.getenv("FLASK_ENV") == "development":
         "http://127.0.0.1:5173"
     ]
 
-# Configure CORS
-# CORS(app, resources={
-#     r"/api/*": {
-#         "origins": [
-#             "http://localhost:8080",
-#             "http://localhost:3000",
-#             "http://127.0.0.1:3000",
-#             "http://localhost:5173",
-#             "http://127.0.0.1:5173",
-#             "https://www.roodan.ae"
-#         ],
-#         "methods": ["GET", "POST", "OPTIONS"],
-#         "allow_headers": ["Content-Type", "Accept", "Authorization", "X-Requested-With"],
-#         "supports_credentials": True
-#     }
-# })
-
-CORS(
-    app,
-    resources={r"/api/*": {
-        "origins": allowed_origins,
-        "methods": ["GET", "POST", "OPTIONS"],
-        "allow_headers": ["Content-Type", "Accept", "Authorization", "X-Requested-With"],
-        "supports_credentials": True
-    }}
-)
+# Configure CORS for the entire app with proper wildcard for all routes
+CORS(app, resources={r"/api/*": {"origins": ["https://roodan.ae", "https://www.roodan.ae"]}})
 
 # Configure Flask app
 app.secret_key = os.getenv("SECRET_KEY", "your-secret-key-for-sessions")
@@ -76,7 +48,7 @@ EMAIL_HOST = os.getenv("SMTP_SERVER", "mail.roodan.ae")
 EMAIL_PORT = int(os.getenv("SMTP_PORT", "465"))
 EMAIL_USER = os.getenv("SMTP_USERNAME")
 EMAIL_PASSWORD = os.getenv("SMTP_PASSWORD")
-RECIPIENT_EMAIL = "info@roodan.ae"
+RECIPIENT_EMAIL = "test@roodan.ae"
 
 # Function to Send Emails (renamed to send_email_notification to avoid conflict)
 def send_email_notification(sender_email, subject, body):
@@ -100,22 +72,28 @@ def send_email_notification(sender_email, subject, body):
         return False
 
 
-@app.before_request
-def handle_options_request():
-    if request.method == 'OPTIONS':
-        response = app.make_response('')
-        response.headers['Access-Control-Allow-Origin'] = request.headers.get('Origin', '*')
+@app.after_request
+def add_cors_headers(response):
+    origin = request.headers.get('Origin')
+    if origin in allowed_origins:
+        response.headers['Access-Control-Allow-Origin'] = origin
         response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
         response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, X-Requested-With'
         response.headers['Access-Control-Allow-Credentials'] = 'true'
-        return response
+    return response
+
 
 @app.route('/')
 def index():
     return render_template('admin_login.html')
 
-@app.route('/contact', methods=['POST'])
+@app.route('/contact', methods=['POST', 'OPTIONS'])
 def contact():
+    # Handle preflight requests
+    if request.method == 'OPTIONS':
+        response = app.make_response('')
+        return response
+    
     try:
         data = request.get_json()
         name = data.get('name')
@@ -209,6 +187,7 @@ def contact():
 
         return jsonify({"message": "Message sent successfully"}), 200
     except Exception as e:
+        print(f"Error in contact endpoint: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 @app.route('/quote-request', methods=['POST'])
