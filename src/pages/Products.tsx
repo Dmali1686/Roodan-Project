@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { Grid, ShoppingBag, Package, Leaf, Droplet, Fuel, Search, X, XCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { QuoteRequestForm } from "@/components/ui/forms/QuoteRequestForm";
 
 // Define proper TypeScript interfaces
 interface Product {
@@ -119,8 +120,9 @@ const ProductModal = memo(({ product, onClose, t, language }: ProductModalProps)
   }, []);
 
   const handleRequestQuote = useCallback(() => {
-    navigate('/inquiry', { state: { selectedProduct: getProductIdByIndex(product.id) } });
-  }, [navigate, product.id]);
+    onClose(); // Close the modal first
+    navigate('/inquiry'); // Navigate without state to show LOIForm
+  }, [navigate, onClose]);
 
   return (
     <div
@@ -229,7 +231,42 @@ const ProductModal = memo(({ product, onClose, t, language }: ProductModalProps)
 
 ProductModal.displayName = 'ProductModal';
 
-// Update MemoizedProductCardWrapper to handle click
+// Add QuoteFormModal component
+const QuoteFormModal = memo(({ productId, onClose }: { productId: string; onClose: () => void }) => {
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, []);
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-4xl bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh] flex flex-col"
+        onClick={e => e.stopPropagation()}
+      >
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-2 z-10 p-2 rounded-full bg-white/90 hover:bg-white shadow-md transition-colors"
+          aria-label="Close modal"
+        >
+          <XCircle className="w-6 h-6 text-gray-500 hover:text-gray-700" />
+        </button>
+        <div className="p-4 overflow-y-auto">
+          <QuoteRequestForm selectedProduct={productId} />
+        </div>
+      </div>
+    </div>
+  );
+});
+
+QuoteFormModal.displayName = 'QuoteFormModal';
+
+// Update MemoizedProductCardWrapper component
 const MemoizedProductCardWrapper = memo(({
   title, 
   image, 
@@ -245,7 +282,6 @@ const MemoizedProductCardWrapper = memo(({
   const [isVisible, setIsVisible] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   
-  // Use memoized category info
   const categoryInfo = useMemo(() => getCategoryInfo(category, t), [category, t]);
   const CategoryIcon = categoryInfo.icon;
 
@@ -267,9 +303,11 @@ const MemoizedProductCardWrapper = memo(({
     return () => observer.disconnect();
   }, []);
 
-  const handleRequestQuote = useCallback(() => {
-    navigate('/inquiry', { state: { selectedProduct: productId } });
-  }, [navigate, productId]);
+  const handleRequestQuote = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigate('/inquiry'); // Navigate without state to show LOIForm
+  }, [navigate]);
 
   return (
     <motion.div 

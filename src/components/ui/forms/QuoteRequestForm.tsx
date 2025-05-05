@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useI18n } from "@/utils/i18n";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -49,6 +49,14 @@ export const QuoteRequestForm = ({ selectedProduct }: QuoteRequestFormProps) => 
     delivery: "",
     message: ""
   });
+
+  // Update form when selectedProduct changes
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      product: selectedProduct || ""
+    }));
+  }, [selectedProduct]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
@@ -264,6 +272,7 @@ export const QuoteRequestForm = ({ selectedProduct }: QuoteRequestFormProps) => 
                 required 
                 placeholder={t("quote.productPlaceholder")}
                 className="rounded-lg"
+                readOnly={!!selectedProduct}
               />
             </div>
             
