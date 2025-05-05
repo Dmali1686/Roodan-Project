@@ -1,3 +1,4 @@
+#print(">> PASSENGER_WSGI.PY LOADED <<")
 from flask import Flask, request, jsonify, render_template, session, redirect, url_for, send_from_directory
 from flask_cors import CORS
 import smtplib
@@ -10,24 +11,54 @@ from admin import record_loi_submission, record_enquiry, record_quotation, admin
 # Load environment variables
 load_dotenv()
 
-app = Flask(__name__)
+BASE_DIR = os.path.dirname(_file_)
+
+app = Flask(
+    _name_
+    
+)
+
+raw_origins = os.getenv(
+    "FRONTEND_ORIGINS",
+    "https://roodan.ae,https://www.roodan.ae"
+)
+allowed_origins = [o.strip() for o in raw_origins.split(",") if o.strip()]
+
+# If you're running locally and want to test against localhost
+if os.getenv("FLASK_ENV") == "development":
+    allowed_origins += [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:5173",
+        "http://127.0.0.1:5173"
+    ]
 
 # Configure CORS
-CORS(app, resources={
-    r"/api/*": {
-        "origins": [
-            "http://localhost:8080",
-            "http://localhost:3000",
-            "http://127.0.0.1:3000",
-            "http://localhost:5173",
-            "http://127.0.0.1:5173",
-            "https://www.roodan.ae"
-        ],
+# CORS(app, resources={
+#     r"/api/*": {
+#         "origins": [
+#             "http://localhost:8080",
+#             "http://localhost:3000",
+#             "http://127.0.0.1:3000",
+#             "http://localhost:5173",
+#             "http://127.0.0.1:5173",
+#             "https://www.roodan.ae"
+#         ],
+#         "methods": ["GET", "POST", "OPTIONS"],
+#         "allow_headers": ["Content-Type", "Accept", "Authorization", "X-Requested-With"],
+#         "supports_credentials": True
+#     }
+# })
+
+CORS(
+    app,
+    resources={r"/api/*": {
+        "origins": allowed_origins,
         "methods": ["GET", "POST", "OPTIONS"],
         "allow_headers": ["Content-Type", "Accept", "Authorization", "X-Requested-With"],
         "supports_credentials": True
-    }
-})
+    }}
+)
 
 # Configure Flask app
 app.secret_key = os.getenv("SECRET_KEY", "your-secret-key-for-sessions")
@@ -41,11 +72,11 @@ with app.app_context():
     init_db()
 
 # Email configuration
-EMAIL_HOST = os.getenv("EMAIL_HOST", "mail.roodan.ae")
-EMAIL_PORT = int(os.getenv("EMAIL_PORT", "465"))
-EMAIL_USER = os.getenv("EMAIL_USER")
-EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
-RECIPIENT_EMAIL = "test@roodan.ae"
+EMAIL_HOST = os.getenv("SMTP_SERVER", "mail.roodan.ae")
+EMAIL_PORT = int(os.getenv("SMTP_PORT", "465"))
+EMAIL_USER = os.getenv("SMTP_USERNAME")
+EMAIL_PASSWORD = os.getenv("SMTP_PASSWORD")
+RECIPIENT_EMAIL = "info@roodan.ae"
 
 # Function to Send Emails (renamed to send_email_notification to avoid conflict)
 def send_email_notification(sender_email, subject, body):
@@ -83,7 +114,7 @@ def handle_options_request():
 def index():
     return render_template('admin_login.html')
 
-@app.route('/api/contact', methods=['POST'])
+@app.route('/contact', methods=['POST'])
 def contact():
     try:
         data = request.get_json()
@@ -180,7 +211,7 @@ def contact():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/api/quote-request', methods=['POST'])
+@app.route('/quote-request', methods=['POST'])
 def quote_request():
     try:
         data = request.get_json()
@@ -327,7 +358,7 @@ def quote_request():
         print(f"Error in quote request: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
-@app.route('/api/loi-submission', methods=['POST'])
+@app.route('/loi-submission', methods=['POST'])
 def loi_submission():
     try:
         data = request.get_json()
@@ -412,5 +443,5 @@ def loi_submission():
 def admin_redirect():
     return redirect(url_for('admin.login'))
 
-if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+# if _name_ == '_main_':
+#     app.run(debug=True, port=5001)

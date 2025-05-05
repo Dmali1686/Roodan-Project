@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-admin_bp = Blueprint('admin', __name__)
+admin_bp = Blueprint('admin', _name_)
 
 def get_db_connection():
     return mysql.connector.connect(
