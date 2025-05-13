@@ -292,7 +292,6 @@ const About = () => {
       { id: "europe", icon: Globe },
       { id: "westAfrica", icon: Building2 },
       { id: "mali", icon: Store },
-      { id: "eastAfrica", icon: Factory },
       { id: "asia", icon: Plane },
       { id: "india", icon: Ship, additionalLocation: true },
       { id: "latinAmerica", icon: Globe },
