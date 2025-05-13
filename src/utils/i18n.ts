@@ -378,17 +378,46 @@ const translations: Record<Language, Record<string, string>> = {
       'loi.sc3':'Submitting...',
       'loi.sc4':'Submit LOI',
 
-      //loi ends here
+      // LOI Form Error Messages
+      'loi.errors.requiredFields': 'Please fill all required fields',
+      'loi.errors.serverInvalid': 'Server returned an invalid response',
+      'loi.errors.failedSubmit': 'Failed to submit LOI',
+      'loi.errors.networkError': 'Network Error',
+      'loi.errors.connectionFailed': 'Failed to connect to the server. Please check your internet connection or try again later.',
+      'loi.errors.tryAgain': 'Failed to submit LOI. Please try again.',
+      
+      // LOI Form Success Messages
+      'loi.success.submitted': 'LOI Submitted Successfully',
+      'loi.success.received': 'Your Letter of Intent has been received. We will contact you shortly.',
 
-    
-    // Footer
-    'slogan':'Premium global trading solutions providing high-quality products with reliable service worldwide.',
-    'footer.rights': 'All rights reserved',
-    'footer.privacy': 'Privacy Policy',
-    'footer.terms': 'Terms of Service',
-    'nav.quick_link':'Quick Links',
-    'footer.registry': 'Registry No.:',
-    'footer.license': 'Economic Licence No.:',
+      // Quote Request Form Error Messages
+      'quote.errors.requiredFields': 'Please fill all required fields',
+      'quote.errors.serverInvalid': 'Server returned an invalid response',
+      'quote.errors.failedSubmit': 'Failed to submit quote request',
+      'quote.errors.networkError': 'Network Error',
+      'quote.errors.connectionFailed': 'Failed to connect to the server. Please check your internet connection or try again later.',
+      'quote.errors.tryAgain': 'Failed to submit quote request. Please try again.',
+      
+      // Quote Request Form Success Messages
+      'quote.success.submitted': 'Quote Request Submitted Successfully',
+      'quote.success.received': 'Your request has been received. Your ticket number is: {0}',
+
+      // Contact Form Error Messages
+      'contact.errors.failedSend': 'Failed to send message. Please try again.',
+      'contact.errors.networkError': 'Error',
+      
+      // Contact Form Success Messages
+      'contact.success.messageSent': 'Message Sent',
+      'contact.success.getBackSoon': 'We will get back to you soon.',
+
+      // Footer
+      'slogan':'Premium global trading solutions providing high-quality products with reliable service worldwide.',
+      'footer.rights': 'All rights reserved',
+      'footer.privacy': 'Privacy Policy',
+      'footer.terms': 'Terms of Service',
+      'nav.quick_link':'Quick Links',
+      'footer.registry': 'Registry No.:',
+      'footer.license': 'Economic Licence No.:',
   },
   
   fr: {
@@ -759,7 +788,39 @@ const translations: Record<Language, Record<string, string>> = {
     'loi.sc2': 'Les copies électroniques sont considérées comme équivalentes aux originaux',
     'loi.sc3': 'Envoi en cours...',
     'loi.sc4': 'Soumettre la LOI',
+
+    // LOI Form Error Messages
+    'loi.errors.requiredFields': 'Veuillez remplir tous les champs obligatoires',
+    'loi.errors.serverInvalid': 'Le serveur a renvoyé une réponse invalide',
+    'loi.errors.failedSubmit': 'Échec de l\'envoi de la LOI',
+    'loi.errors.networkError': 'Erreur de réseau',
+    'loi.errors.connectionFailed': 'Échec de la connexion au serveur. Veuillez vérifier votre connexion internet ou réessayer plus tard.',
+    'loi.errors.tryAgain': 'Échec de l\'envoi de la LOI. Veuillez réessayer.',
     
+    // LOI Form Success Messages
+    'loi.success.submitted': 'LOI envoyée avec succès',
+    'loi.success.received': 'Votre Lettre d\'Intention a été reçue. Nous vous contacterons prochainement.',
+    
+    // Quote Request Form Error Messages
+    'quote.errors.requiredFields': 'Veuillez remplir tous les champs obligatoires',
+    'quote.errors.serverInvalid': 'Le serveur a renvoyé une réponse invalide',
+    'quote.errors.failedSubmit': 'Échec de l\'envoi de la demande de devis',
+    'quote.errors.networkError': 'Erreur de réseau',
+    'quote.errors.connectionFailed': 'Échec de la connexion au serveur. Veuillez vérifier votre connexion internet ou réessayer plus tard.',
+    'quote.errors.tryAgain': 'Échec de l\'envoi de la demande de devis. Veuillez réessayer.',
+    
+    // Quote Request Form Success Messages
+    'quote.success.submitted': 'Demande de devis envoyée avec succès',
+    'quote.success.received': 'Votre demande a été reçue. Votre numéro de ticket est : {0}',
+    
+    // Contact Form Error Messages
+    'contact.errors.failedSend': 'Échec de l\'envoi du message. Veuillez réessayer.',
+    'contact.errors.networkError': 'Erreur',
+    
+    // Contact Form Success Messages
+    'contact.success.messageSent': 'Message Envoyé',
+    'contact.success.getBackSoon': 'Nous vous répondrons bientôt.',
+
     // Footer
     'slogan':'Solutions commerciales mondiales haut de gamme offrant des produits de haute qualité avec un service fiable dans le monde entier.',
     'footer.rights': 'Tous droits réservés',
@@ -1138,6 +1199,38 @@ const translations: Record<Language, Record<string, string>> = {
     'loi.sc2': 'تعتبر النسخ الإلكترونية مكافئة قانونيًا للأصول',
     'loi.sc3': 'جارٍ الإرسال...',
     'loi.sc4': 'إرسال LOI',
+
+    // LOI Form Error Messages
+    'loi.errors.requiredFields': 'يرجى ملء جميع الحقول المطلوبة',
+    'loi.errors.serverInvalid': 'أرجع الخادم استجابة غير صالحة',
+    'loi.errors.failedSubmit': 'فشل في إرسال خطاب النوايا',
+    'loi.errors.networkError': 'خطأ في الشبكة',
+    'loi.errors.connectionFailed': 'فشل الاتصال بالخادم. يرجى التحقق من اتصال الإنترنت الخاص بك أو المحاولة مرة أخرى لاحقا.',
+    'loi.errors.tryAgain': 'فشل في إرسال خطاب النوايا. يرجى المحاولة مرة أخرى.',
+    
+    // LOI Form Success Messages
+    'loi.success.submitted': 'تم إرسال خطاب النوايا بنجاح',
+    'loi.success.received': 'تم استلام خطاب النوايا الخاص بك. سنتصل بك قريبا.',
+    
+    // Quote Request Form Error Messages
+    'quote.errors.requiredFields': 'يرجى ملء جميع الحقول المطلوبة',
+    'quote.errors.serverInvalid': 'أرجع الخادم استجابة غير صالحة',
+    'quote.errors.failedSubmit': 'فشل في إرسال طلب عرض السعر',
+    'quote.errors.networkError': 'خطأ في الشبكة',
+    'quote.errors.connectionFailed': 'فشل الاتصال بالخادم. يرجى التحقق من اتصال الإنترنت الخاص بك أو المحاولة مرة أخرى لاحقا.',
+    'quote.errors.tryAgain': 'فشل في إرسال طلب عرض السعر. يرجى المحاولة مرة أخرى.',
+    
+    // Quote Request Form Success Messages
+    'quote.success.submitted': 'تم إرسال طلب عرض السعر بنجاح',
+    'quote.success.received': 'تم استلام طلبك. رقم التذكرة الخاص بك هو: {0}',
+    
+    // Contact Form Error Messages
+    'contact.errors.failedSend': 'فشل في إرسال الرسالة. يرجى المحاولة مرة أخرى.',
+    'contact.errors.networkError': 'خطأ',
+    
+    // Contact Form Success Messages
+    'contact.success.messageSent': 'تم إرسال الرسالة',
+    'contact.success.getBackSoon': 'سنرد عليك قريبا.',
 
     // Footer
     'slogan':'حلول تجارية عالمية متميزة توفر منتجات عالية الجودة مع خدمة موثوقة في جميع أنحاء العالم..',

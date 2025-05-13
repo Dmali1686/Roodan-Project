@@ -1,6 +1,7 @@
 import { Header } from "@/components/ui/layout/Header";
 import { Footer } from "@/components/ui/layout/Footer";
 import { useI18n } from "@/utils/i18n";
+import { useI18nToast } from "@/utils/i18n-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,6 +14,7 @@ import { motion } from "framer-motion";
 const Contact = () => {
   const { t, language } = useI18n();
   const { toast } = useToast();
+  const { successToast, errorToast } = useI18nToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [formData, setFormData] = useState({
@@ -44,20 +46,20 @@ const Contact = () => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-// Update the API endpoint URL and remove Origin header
-const response = await fetch("https://roodan.ae/api/contact", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    "Accept": "application/json",
-  },
-  mode: "cors",
-  credentials: "include",
-  body: JSON.stringify(formData)
-});
+      // Update the API endpoint URL and remove Origin header
+      const response = await fetch("https://roodan.ae/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        mode: "cors",
+        credentials: "include",
+        body: JSON.stringify(formData)
+      });
 
       if (!response.ok) {
-        throw new Error("Failed to send message");
+        throw new Error(t("contact.errors.failedSend"));
       }
 
       // Reset form
@@ -67,18 +69,14 @@ const response = await fetch("https://roodan.ae/api/contact", {
         message: ""
       });
       
-      toast({
-        title: t("SendUS.success"),
-        description: "We will get back to you soon.",
-        variant: "default"  // Changed from "success" to "default"
-      });
+      successToast("contact.success.messageSent", "contact.success.getBackSoon");
     } catch (error) {
       console.error("Error:", error);
-      toast({
-        title: "Error",
-        description: "Failed to send message. Please try again.",
-        variant: "destructive"
-      });
+      if (error instanceof Error) {
+        errorToast("contact.errors.networkError", "", { "0": error.message });
+      } else {
+        errorToast("contact.errors.networkError", "contact.errors.failedSend");
+      }
     } finally {
       setIsSubmitting(false);
     }

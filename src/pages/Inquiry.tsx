@@ -4,6 +4,7 @@ import { pageVariants } from "@/lib/animations";
 import { Header } from "@/components/ui/layout/Header";
 import { Footer } from "@/components/ui/layout/Footer";
 import { useI18n } from "@/utils/i18n";
+import { useI18nToast } from "@/utils/i18n-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -32,6 +33,7 @@ import { QuoteRequestForm } from "@/components/ui/forms/QuoteRequestForm";
 const LOIForm = () => {
   const { t, language } = useI18n();
   const { toast } = useToast();
+  const { successToast, errorToast } = useI18nToast();
   const location = useLocation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
@@ -132,7 +134,7 @@ const LOIForm = () => {
       const missingFields = requiredFields.filter(field => !formData[field]);
       
       if (missingFields.length > 0) {
-        throw new Error("Please fill all required fields");
+        throw new Error(t("loi.errors.requiredFields"));
       }
       
       // Use XMLHttpRequest instead of fetch to bypass potential blocking
@@ -147,11 +149,7 @@ const LOIForm = () => {
         if (xhr.status >= 200 && xhr.status < 300) {
           try {
             const data = JSON.parse(xhr.responseText);
-            toast({
-              title: "LOI Submitted Successfully",
-              description: "Your Letter of Intent has been received. We will contact you shortly.",
-              duration: 5000,
-            });
+            successToast("loi.success.submitted", "loi.success.received");
             
             // Reset form
             setFormData({
@@ -190,15 +188,10 @@ const LOIForm = () => {
             });
           } catch (error) {
             console.error('Error parsing JSON response:', error);
-            toast({
-              title: "Error",
-              description: "Server returned an invalid response",
-              variant: "destructive",
-              duration: 5000,
-            });
+            errorToast("loi.errors.networkError", "loi.errors.serverInvalid");
           }
         } else {
-          let errorMessage = "Failed to submit LOI";
+          let errorMessage = t("loi.errors.failedSubmit");
           try {
             const data = JSON.parse(xhr.responseText);
             errorMessage = data.message || errorMessage;
@@ -206,12 +199,12 @@ const LOIForm = () => {
             // If parsing fails, use the default error message
           }
           
-          toast({
-            title: "Error",
-            description: errorMessage,
-            variant: "destructive",
-            duration: 5000,
-          });
+          // Using custom error message from server if available
+          if (errorMessage !== t("loi.errors.failedSubmit")) {
+            errorToast("loi.errors.networkError", "", { "0": errorMessage });
+          } else {
+            errorToast("loi.errors.networkError", "loi.errors.failedSubmit");
+          }
         }
         setIsSubmitting(false);
       };
@@ -219,12 +212,7 @@ const LOIForm = () => {
       // Handle network errors
       xhr.onerror = function() {
         console.error('Network error occurred');
-        toast({
-          title: "Network Error",
-          description: "Failed to connect to the server. Please check your internet connection or try again later.",
-          variant: "destructive",
-          duration: 5000,
-        });
+        errorToast("loi.errors.networkError", "loi.errors.connectionFailed");
         setIsSubmitting(false);
       };
       
@@ -233,12 +221,11 @@ const LOIForm = () => {
       
     } catch (error) {
       console.error('Submission error:', error);
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to submit LOI. Please try again.",
-        variant: "destructive",
-        duration: 5000,
-      });
+      if (error instanceof Error) {
+        errorToast("loi.errors.networkError", "", { "0": error.message });
+      } else {
+        errorToast("loi.errors.networkError", "loi.errors.tryAgain");
+      }
       setIsSubmitting(false);
     }
   };

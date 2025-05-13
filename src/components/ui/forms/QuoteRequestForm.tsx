@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useI18n } from "@/utils/i18n";
+import { useI18nToast } from "@/utils/i18n-toast";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,6 +37,7 @@ const pageVariants = {
 export const QuoteRequestForm = ({ selectedProduct }: QuoteRequestFormProps) => {
   const { t } = useI18n();
   const { toast } = useToast();
+  const { successToast, errorToast } = useI18nToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Form state
@@ -73,12 +75,12 @@ export const QuoteRequestForm = ({ selectedProduct }: QuoteRequestFormProps) => 
       const missingFields = requiredFields.filter(field => !formData[field]);
       
       if (missingFields.length > 0) {
-        throw new Error("Please fill all required fields");
+        throw new Error(t("quote.errors.requiredFields"));
       }
       
       // Use XMLHttpRequest instead of fetch to bypass potential blocking
       const xhr = new XMLHttpRequest();
-      xhr.open('POST', 'http://localhost:5000/api/quote-request', true);
+      xhr.open('POST', 'https://roodan.ae/api/quote-request', true);
       xhr.setRequestHeader('Content-Type', 'application/json');
       xhr.setRequestHeader('Accept', 'application/json');
       xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
@@ -88,11 +90,7 @@ export const QuoteRequestForm = ({ selectedProduct }: QuoteRequestFormProps) => 
         if (xhr.status >= 200 && xhr.status < 300) {
           try {
             const data = JSON.parse(xhr.responseText);
-            toast({
-              title: "Quote Request Submitted Successfully",
-              description: `Your request has been received. Your ticket number is: ${data.ticket_no}`,
-              duration: 5000,
-            });
+            successToast("quote.success.submitted", "quote.success.received", { "0": data.ticket_no });
             
             // Reset form
             setFormData({
@@ -107,15 +105,10 @@ export const QuoteRequestForm = ({ selectedProduct }: QuoteRequestFormProps) => 
             });
           } catch (error) {
             console.error('Error parsing JSON response:', error);
-            toast({
-              title: "Error",
-              description: "Server returned an invalid response",
-              variant: "destructive",
-              duration: 5000,
-            });
+            errorToast("quote.errors.networkError", "quote.errors.serverInvalid");
           }
         } else {
-          let errorMessage = "Failed to submit quote request";
+          let errorMessage = t("quote.errors.failedSubmit");
           try {
             const data = JSON.parse(xhr.responseText);
             errorMessage = data.message || errorMessage;
@@ -123,12 +116,12 @@ export const QuoteRequestForm = ({ selectedProduct }: QuoteRequestFormProps) => 
             // If parsing fails, use the default error message
           }
           
-          toast({
-            title: "Error",
-            description: errorMessage,
-            variant: "destructive",
-            duration: 5000,
-          });
+          // Using custom error message from server if available
+          if (errorMessage !== t("quote.errors.failedSubmit")) {
+            errorToast("quote.errors.networkError", "", { "0": errorMessage });
+          } else {
+            errorToast("quote.errors.networkError", "quote.errors.failedSubmit");
+          }
         }
         setIsSubmitting(false);
       };
@@ -136,12 +129,7 @@ export const QuoteRequestForm = ({ selectedProduct }: QuoteRequestFormProps) => 
       // Handle network errors
       xhr.onerror = function() {
         console.error('Network error occurred');
-        toast({
-          title: "Network Error",
-          description: "Failed to connect to the server. Please check your internet connection or try again later.",
-          variant: "destructive",
-          duration: 5000,
-        });
+        errorToast("quote.errors.networkError", "quote.errors.connectionFailed");
         setIsSubmitting(false);
       };
       
@@ -150,12 +138,11 @@ export const QuoteRequestForm = ({ selectedProduct }: QuoteRequestFormProps) => 
       
     } catch (error) {
       console.error('Submission error:', error);
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to submit quote request. Please try again.",
-        variant: "destructive",
-        duration: 5000,
-      });
+      if (error instanceof Error) {
+        errorToast("quote.errors.networkError", "", { "0": error.message });
+      } else {
+        errorToast("quote.errors.networkError", "quote.errors.tryAgain");
+      }
       setIsSubmitting(false);
     }
   };
